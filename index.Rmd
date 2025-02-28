@@ -1,0 +1,106 @@
+---
+title: "Portfolio Computational Musicology"
+author: "Ellen Rosmalen"
+output:
+    flexdashboard::flex_dashboard:
+      story: true
+      theme: "journal" 
+      orientation: rows 
+---
+
+```{r, include= FALSE}
+library(ggplot2)
+library(tidyverse)
+library(flexdashboard)
+library(readr)
+
+source("compmus.R")
+```
+
+# Introduction {.tabset}
+
+Row 
+-----------------------
+
+###  This portfolio was made for the course Computational Musicology at the UvA. The portfolio will give insight on interesting comparisons between different AI-made tracks!
+
+```{r}
+valueBox('The portfolio')
+```
+
+Row 
+----------------------------------
+
+### The tracks used in this portfolio were created using StableAudio with carefully crafted prompts to achieve the desired sound.
+
+```{r}
+valueBox( "The tracks ")
+```
+
+# Visualisations
+
+Row  {data-width=20%}
+----------------------------------------  
+### Explanation about the visualisations/results etc  
+On the left, a chromagram is displayed, representing the intensity of different pitch classes over time. This visualization highlights the harmonic content of the track, showing which notes are most prominent at each moment. Patterns in the chromagram can indicate key changes, chord progressions, or repeating harmonic structures.
+
+In the middle, we see a self-similarity matrix based on chroma features. This matrix reveals structural characteristics of the track by comparing its harmonic content over time. A strong diagonal line indicates perfect self-similarity, meaning the music remains consistent over time. Additionally, block-like patterns suggest recurring sections, such as verses and choruses, while grid-like formations may be linked to rhythmic consistency or percussive elements.
+
+On the right, a self-similarity matrix based on timbre features is shown. Timbre refers to the texture and tone color of the sound, often influenced by instrument choice and production techniques. This matrix reveals a structured musical piece with clear repetition. The strong diagonal line again indicates self-similarity, while variations in the matrix suggest dynamic changes in instrumentation and sonic texture. Grid-like formations may indicate rhythmically consistent elements, while larger block structures suggest repeated themes or motifs across different sections of the track. The high similarity at the beginning and end of the piece suggests a well-defined structure, potentially featuring repeated introductions and conclusions.
+
+
+Row {.tabset .tabset-fade , data-width = 100% data-height=700px}  
+----------------------------------------  
+### Chromagram track 1    
+```{r}  
+ "features/ellen-r-1.mp3.json" |>                            
+  compmus_chroma(norm = "identity") |>                    
+  ggplot(aes(x = time, y = pc, fill = value)) + 
+  geom_raster() +
+  scale_y_continuous(
+    breaks = 0:11,
+    minor_breaks = NULL,
+    labels = c(
+                "C", "C#|Db", "D", "D#|Eb",
+                "E", "F", "F#|Gb", "G",
+                "G#|Ab", "A", "A#|Bb", "B"
+              )
+  ) +
+  scale_fill_viridis_c(guide = "none") +               
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
+```
+
+### Self-similarity matrix based on chroma track 1 
+```{r}  
+"features/ellen-r-1.mp3.json" |>                            
+  compmus_chroma(norm = "identity") |>                 
+  compmus_self_similarity(
+    feature = pc,
+    distance = "euclidean"                             
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()                                        
+```
+
+### self-similarity matrix based on timbre track 1 
+```{r}
+ "features/ellen-r-1.mp3.json" |>                           
+  compmus_mfccs(norm = "identity") |>                  
+  compmus_self_similarity(
+    feature = mfcc,
+    distance = "euclidean"                             
+  ) |>   
+  ggplot(aes(x = xtime, y = ytime, fill = d)) + 
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +               
+  labs(x = "Time (s)", y = NULL, fill = NULL) +
+  theme_classic()  
+```
+
+# Conclusion and Discussion
+
+```{r}
