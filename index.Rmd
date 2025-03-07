@@ -58,7 +58,7 @@ ggplotly(Plot1, tooltip = "text")
 
 ```
 ***
-In this plot it is interesting to see that tracks with a high instrumentalness, have a lower arousal and tempo. This will be the foundation for further analysis. On the basis of the features valence, arousal, tempo and instrumentalness one could say that lo-l-1 and reinout-w-2 are eachother extremes. What makes them that much different? 
+In this plot it is interesting to see that tracks with a high instrumentalness, have a lower arousal and tempo. This will be the foundation for further analysis. On the basis of the features valence, arousal, tempo and instrumentalness one could say that lo-l-1 and reinout-w-2 are eachother extremes. How can we visualize these extremes? 
 
 
 ```{r, include = FALSE}
@@ -252,7 +252,7 @@ These self-similarity matrix' are based on timbre features. Timbre refers to the
   ggplot(aes(x = time, y = name, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(x = "Time (s)", y = "Template", fill = NULL) +
+  labs(title = "Chordograms of Lo's track", x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic()                                      
 
 "features/reinout-w-2.json" |> 
@@ -265,7 +265,7 @@ These self-similarity matrix' are based on timbre features. Timbre refers to the
   ggplot(aes(x = time, y = name, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(x = "Time (s)", y = "Template", fill = NULL) +
+  labs(title = "Chordograms of Reinout's track",x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic()                                      
 
 ```
