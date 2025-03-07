@@ -21,22 +21,24 @@ source("compmus.R")
 # Introduction {.tabset}
 
 Row 
+----------------------------------
+
+### AI is gradually taking over the world, including the music industry. When it comes to music production, the possibilities are endless—different genres, tempos, melodies, everything. That might be what makes it so exciting. What if a corpus were created to compare just how different all these various pieces of music really are?
+
+```{r}
+valueBox( "The purpose ")
+```
+
+Row 
 -----------------------
 
-###  This portfolio was made for the course Computational Musicology at the UvA. The portfolio will give insight on interesting comparisons between different AI-made tracks!
+###  This portfolio was made for the course Computational Musicology at the UvA and is made by Ellen Rosmalen. 
 
 ```{r}
 valueBox('The portfolio')
 ```
 
-Row 
-----------------------------------
 
-### The tracks used in this portfolio were created using StableAudio with carefully crafted prompts to achieve the desired sound.
-
-```{r}
-valueBox( "The tracks ")
-```
 
 Visualisations {.storyboard}
 ===================
@@ -46,7 +48,7 @@ Visualisations {.storyboard}
 ```{r}
 info <- read.csv('compmus2025.csv')
 
-Plot1 <- ggplot(info, aes(x = arousal, y = valence, colour = tempo, size = instrumentalness, 
+Plot1 <- ggplot(info, aes(title= "Scatterplot displaying the corpus by arousal, valence, tempo and instrumentalness "x = arousal, y = valence, colour = tempo, size = instrumentalness, 
                           text = paste("Filename:", filename, 
                                        "<br>Arousal:", arousal, 
                                        "<br>Valence:", valence, 
@@ -194,7 +196,7 @@ These chromagrams represent the intensity of different pitch classes over time. 
   ggplot(aes(x = xtime, y = ytime, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs("Self-Similarity Matrix Based on Chroma of Lo's Track", x = "Time (s)", y = NULL, fill = NULL) +
+  labs(title = "Self-Similarity Matrix Based on Chroma of Lo's Track", x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()  
 
 "features/reinout-w-2.json" |>                            
@@ -206,7 +208,7 @@ These chromagrams represent the intensity of different pitch classes over time. 
   ggplot(aes(x = xtime, y = ytime, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title= "Self-Similarity Matrix Based on Chroma of Reinout's Track", x = "Time (s)", y = NULL, fill = NULL) +
+  labs(title = "Self-Similarity Matrix Based on Chroma of Reinout's Track", x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()                                        
 ```
 These self-similarity matrix' are based on chroma features. This matrix reveals structural characteristics of the track by comparing its harmonic content over time. A strong diagonal line indicates perfect self-similarity, meaning the music remains consistent over time. Additionally, block-like patterns suggest recurring sections, such as verses and choruses, while grid-like formations may be linked to rhythmic consistency or percussive elements. The track of Lo gives a beautiful grid-pattern, in contrary to the track of Reinout. The mix of bright and dark regions suggests variations in melodic or harmonic content, meaning the song follows a structured composition with repeated themes and distinct transitions, which is not the case with the track of Reinout. The matrix of Reinouts track indicates a lot of changes continuously without repeating motifs or sections. 
@@ -252,7 +254,7 @@ These self-similarity matrix' are based on timbre features. Timbre refers to the
   ggplot(aes(x = time, y = name, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Chordograms of Lo's track", x = "Time (s)", y = "Template", fill = NULL) +
+  labs(title = "Chordograms of Lo's Track", x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic()                                      
 
 "features/reinout-w-2.json" |> 
@@ -265,7 +267,7 @@ These self-similarity matrix' are based on timbre features. Timbre refers to the
   ggplot(aes(x = time, y = name, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Chordograms of Reinout's track",x = "Time (s)", y = "Template", fill = NULL) +
+  labs(title = "Chordograms of Reinout's Track",x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic()                                      
 
 ```
