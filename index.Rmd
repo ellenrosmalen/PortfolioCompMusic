@@ -13,6 +13,13 @@ library(plotly)
 library(tidyverse)
 library(flexdashboard)
 library(readr)
+library(signal)
+library(tidymodels)
+library(ggdendro)
+library(heatmaply)
+library(dplyr)
+library(kknn)
+
 
 source("compmus.R")
 ```
@@ -23,11 +30,21 @@ source("compmus.R")
 Row 
 ----------------------------------
 
-### AI is gradually taking over the world, including the music industry. When it comes to music production, the possibilities are endless—different genres, tempos, melodies, everything. That might be what makes it so exciting. What if a corpus were created to compare just how different all these various pieces of music really are?
+### AI is gradually taking over the world, including the music industry. When it comes to music production, the possibilities are endless—different genres, tempos, melodies, everything. That might be what makes it so exciting. What if a corpus was created to compare just how different all these various pieces of music really are?
 
 ```{r}
 valueBox( "The purpose ")
 ```
+
+Row 
+-----------------------
+### Students of the course Computational Musicology were asked to make two tracks either using AI or composing their own. All these tracks were put in a corpus, which is used in this portfolio.
+```{r}
+valueBox( "The corpus ")
+```
+
+
+
 
 Row 
 -----------------------
@@ -42,25 +59,45 @@ valueBox('The portfolio')
 
 Visualisations {.storyboard}
 ===================
-
 ### Arousal, Valence, Tempo, Instrumentalness; which has which?
 
 ```{r}
 info <- read.csv('compmus2025.csv')
 
-Plot1 <- ggplot(info, aes(title= "Scatterplot displaying the corpus by arousal, valence, tempo and instrumentalness "x = arousal, y = valence, colour = tempo, size = instrumentalness, 
+Plot1 <- ggplot(info, aes(x = arousal, y = valence, colour = tempo, size = instrumentalness, 
                           text = paste("Filename:", filename, 
                                        "<br>Arousal:", arousal, 
                                        "<br>Valence:", valence, 
                                        "<br>Tempo:", tempo, 
                                        "<br>Instrumentalness:", instrumentalness))) + 
-  geom_jitter(alpha = 0.8)
+  geom_jitter(alpha = 0.8) + 
+  ggtitle("Scatterplot displaying the corpus by arousal, valence, tempo and instrumentalness")
 
 ggplotly(Plot1, tooltip = "text")
 
 ```
 ***
-In this plot it is interesting to see that tracks with a high instrumentalness, have a lower arousal and tempo. This will be the foundation for further analysis. On the basis of the features valence, arousal, tempo and instrumentalness one could say that lo-l-1 and reinout-w-2 are eachother extremes. How can we visualize these extremes? 
+In this scatterplot on the y-axis is valence, the x-axis aurosal, this size of the data-point instrumentalness and the color is of the data-point is tempo. Interesting to see is that tracks with a high instrumentalness, have a mostly a lower arousal and tempo. This will be the foundation for further analysis. On the basis of the features valence, arousal, tempo and instrumentalness one could say that lo-l-1 and reinout-w-2 are eachother extremes. How can we visualize these extremes? In this portofolio the tracks of Lo and Reinout will be compared, without listening to the tracks. The comparisons will be made on the basis of several plots: chromagrams, self-similarity matrix', chordograms, novelty functions and tempograms. 
+
+```{r, include=FALSE}
+get_conf_mat <- function(fit) {
+  outcome <- .get_tune_outcome_names(fit)
+  fit |> 
+    collect_predictions() |> 
+    conf_mat(truth = outcome, estimate = .pred_class)
+}  
+
+get_pr <- function(fit) {
+  fit |> 
+    conf_mat_resampled() |> 
+    group_by(Prediction) |> mutate(precision = Freq / sum(Freq)) |> 
+    group_by(Truth) |> mutate(recall = Freq / sum(Freq)) |> 
+    ungroup() |> filter(Prediction == Truth) |> 
+    select(class = Prediction, precision, recall)
+}
+
+compmus2025 <- read_csv("compmus2025.csv")
+```
 
 
 ```{r, include = FALSE}
@@ -147,7 +184,7 @@ key_templates <-
   )
 ```
 
-### Chromagrams of Lo's and Reinout's tracks 
+### Chromagrams of Lo's and Reinouts track 
 ```{r}  
  "features/lo-l-1.json" |>                            
   compmus_chroma(norm = "identity") |>                    
@@ -180,12 +217,12 @@ key_templates <-
               )
   ) +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Chromagram of Reinout's Track",x = "Time (s)", y = NULL, fill = NULL) +
+  labs(title = "Chromagram of Reinouts Track", x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic() 
 ```
 These chromagrams represent the intensity of different pitch classes over time. This visualization highlights the harmonic content of the track, showing which notes are most prominent at each moment. Patterns in the chromagram indicate key changes, chord progressions, or repeating harmonic structures. While the track of Lo is mostly in pitch class G, the track of reinout does not cointain a certain pitchclass.
 
-### Self-similarity matrix based on chroma of Lo's and Reinout's tracks
+### Self-similarity matrix based on chroma of Lo's and Reinouts track
 ```{r}  
 "features/lo-l-1.json" |>                            
   compmus_chroma(norm = "identity") |>                 
@@ -208,12 +245,12 @@ These chromagrams represent the intensity of different pitch classes over time. 
   ggplot(aes(x = xtime, y = ytime, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Self-Similarity Matrix Based on Chroma of Reinout's Track", x = "Time (s)", y = NULL, fill = NULL) +
+  labs(title = "Self-Similarity Matrix Based on Chroma of Reinouts Track", x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()                                        
 ```
 These self-similarity matrix' are based on chroma features. This matrix reveals structural characteristics of the track by comparing its harmonic content over time. A strong diagonal line indicates perfect self-similarity, meaning the music remains consistent over time. Additionally, block-like patterns suggest recurring sections, such as verses and choruses, while grid-like formations may be linked to rhythmic consistency or percussive elements. The track of Lo gives a beautiful grid-pattern, in contrary to the track of Reinout. The mix of bright and dark regions suggests variations in melodic or harmonic content, meaning the song follows a structured composition with repeated themes and distinct transitions, which is not the case with the track of Reinout. The matrix of Reinouts track indicates a lot of changes continuously without repeating motifs or sections. 
 
-### self-similarity matrix based on timbre of Lo's and Reinout's tracks
+### self-similarity matrix based on timbre of Lo's and Reinouts track
 ```{r}
  "features/lo-l-1.json" |>                           
   compmus_mfccs(norm = "identity") |>                  
@@ -236,13 +273,13 @@ These self-similarity matrix' are based on chroma features. This matrix reveals 
   ggplot(aes(x = xtime, y = ytime, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Self-Similarity Matrix Based on Timbre of Reinout's Track", x = "Time (s)", y = NULL, fill = NULL) +
+  labs(title = "Self-Similarity Matrix Based on Timbre of Reinouts Track", x = "Time (s)", y = NULL, fill = NULL) +
   theme_classic()
 ```
 
 These self-similarity matrix' are based on timbre features. Timbre refers to the texture and tone color of the sound, often influenced by instrument choice and production techniques. This matrix reveals a structured musical piece with clear repetition. The strong diagonal line again indicates self-similarity, while variations in the matrix suggest dynamic changes in instrumentation and sonic texture. Grid-like formations may indicate rhythmically consistent elements, while larger block structures suggest repeated themes or motifs across different sections of the track. The high similarity at the beginning and end of the piece suggests a well-defined structure, potentially featuring repeated introductions and conclusions. Again, here Lo's track had a obvious grid-structure, which indicates that it is a structured song with well-defined sections. What is interesting to see in Reinouts matrix, is that there is high variation, meaning it does not strongly repeat timbral elements throughout. The bight yellow-green bands on the top and right edges indicate a strong similarity between the beginning and the end of the piece. 
 
-### Chordograms of Lo's and Reinout's tracks
+### Chordograms of Lo's and Reinouts track
 ```{r}
 "features/lo-l-1.json" |> 
   compmus_chroma(norm = "identity") |> 
@@ -267,12 +304,151 @@ These self-similarity matrix' are based on timbre features. Timbre refers to the
   ggplot(aes(x = time, y = name, fill = d)) + 
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +               
-  labs(title = "Chordograms of Reinout's Track",x = "Time (s)", y = "Template", fill = NULL) +
+  labs(title = "Chordograms of Reinouts Track",x = "Time (s)", y = "Template", fill = NULL) +
   theme_classic()                                      
 
 ```
 
-These chordogram displays matches with expectations of certain played chords. A template is created to represent the presence or absence of certain traits, such as chords, in a piece of music. This template indicates the amount of energy present in specific chords. The chordogram visualizes the relationship by showing how closely the audio matches the template. In the chordogram, dark blue indicates a good match, while yellow indicates a poor match, making it easier to identify which chords are most prominent in the audio. As you can see in the chordogram the chords used in the track of Lo are as expected a lot, and are mostly in E and G, while the chordogram has some difficulty making distinctions between  g major and g minor, and e minor and e-flat major.  Now, for Reinouts track, the chordogram has a lot of difficulty distinguishing between all the chords. There is a lot of variation in the yellows and blues, indicating variation in the chords. 
+These chordograms displays matches with expectations of certain played chords. A template is created to represent the presence or absence of certain traits, such as chords, in a piece of music. This template indicates the amount of energy present in specific chords. The chordogram visualizes the relationship by showing how closely the audio matches the template. In the chordogram, dark blue indicates a good match, while yellow indicates a poor match, making it easier to identify which chords are most prominent in the audio. As you can see in the chordogram the chords used in the track of Lo are as expected a lot, and are mostly in E and G, while the chordogram has some difficulty making distinctions between  g major and g minor, and e minor and e-flat major.  Now, for Reinouts track, the chordogram has a lot of difficulty distinguishing between all the chords. There is a lot of variation in the yellows and blues, indicating variation in the chords. 
+
+### Energy-based novelty function based on Essentia’s loudness estimates of Lo's and Reinouts track 
+```{r}
+"features/lo-l-1.json" |>
+  compmus_energy_novelty() |> 
+  ggplot(aes(t, novelty)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Energy-based novelty function on Lo's track", x = "Time (s)", y = "Energy Novelty")
+
+"features/reinout-w-2.json" |>
+  compmus_energy_novelty() |> 
+  ggplot(aes(t, novelty)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Energy-based novelty function on Reinouts track", x = "Time (s)", y = "Energy Novelty")
+
+```
+
+### Spectral-novelty function of Lo's and Reinouts track 
+```{r}
+"features/lo-l-1.json" |>
+  compmus_spectral_novelty() |> 
+  ggplot(aes(t, novelty)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "Spectral-novelty function on Lo's track", x = "Time (s)", y = "Spectral Novelty")
+
+"features/reinout-w-2.json" |>
+  compmus_spectral_novelty() |> 
+  ggplot(aes(t, novelty)) +
+  geom_line() +
+  theme_minimal() +
+  labs(title = "spectral-novelty function on Reinouts track",x = "Time (s)", y = "Spectral Novelty")
+```
+
+### Tempogram 
+```{r}
+
+```
+
+### Hierarchical clustering
+```{r}
+cluster_juice <-
+  recipe(
+    filename ~
+      arousal +
+      danceability +
+      instrumentalness +
+      tempo +
+      valence,
+    data = compmus2025
+  ) |>
+  step_center(all_predictors()) |>
+  step_scale(all_predictors()) |> 
+  # step_range(all_predictors()) |> 
+  prep(compmus2025) |>
+  juice() |>
+  column_to_rownames("filename")
+
+compmus_dist <- dist(cluster_juice, method = "euclidean")
+
+compmus_dist |> 
+  hclust(method = "complete") |> 
+  dendro_data() |>
+  ggdendrogram()
+```
+
+### Heatmap clustering
+```{r}
+heatmaply(
+  cluster_juice,
+  hclustfun = hclust,
+  hclust_method = "average",  # Change for single, average, or complete linkage.
+  dist_method = "euclidean"
+)
+```
+
+### Overview; AI-made or not? 
+```{r}
+compmus2025_filtered <- compmus2025 %>%
+  dplyr::filter(!is.na(ai)) %>%
+  dplyr::mutate(ai = factor(if_else(ai, "AI", "Non-AI")))
+
+p <- compmus2025_filtered |>
+  ggplot(aes(x = valence, y = arousal, colour = ai, size = tempo, 
+             text = paste("Filename:", filename, 
+                          "<br>Arousal:", arousal, 
+                          "<br>Valence:", valence, 
+                          "<br>Tempo:", tempo,
+                          "<br>AI or Non-AI:", ai))) +
+  geom_point(alpha = 0.8) +
+  scale_color_viridis_d() +
+  labs(
+    x = "Valence",
+    y = "Arousal",
+    size = "Tempo",
+    colour = "AI"
+  )
+
+ggplotly(p, tooltip = "text")
+
+```
+
+### But how good is AI in predicting AI-generated tracks actually?
+```{r}
+
+
+classification_recipe <-
+  recipe(
+    ai ~
+      arousal +
+      danceability +
+      instrumentalness +
+      tempo +
+      valence,
+    data = compmus2025_filtered
+  ) |>
+  step_center(all_predictors()) |>
+  step_scale(all_predictors())   
+
+compmus_cv <- compmus2025_filtered |> vfold_cv(5)
+
+knn_model <-
+  nearest_neighbor(neighbors = 1) |>
+  set_mode("classification") |> 
+  set_engine("kknn")
+
+classification_knn <- 
+  workflow() |> 
+  add_recipe(classification_recipe) |> 
+  add_model(knn_model) |> 
+  fit_resamples(compmus_cv, control = control_resamples(save_pred = TRUE))
+classification_knn |> get_conf_mat()
+
+classification_knn |> get_conf_mat() |> autoplot(type = "mosaic")
+classification_knn |> get_conf_mat() |> autoplot(type = "heatmap")
+
+```
 
 Conclusion and Discussion
 ===========
