@@ -649,10 +649,14 @@ Conclusion and Discussion
 
 These previous analyses compare the characteristics of Tobias' and Reinouts tracks, revealing distinct musical approaches. Tobias' track exhibits a dynamic tempo, fluctuating between 110 and 130 BPM. Besides this there are infrequent but high-amplitude energy shifts, with a notable spike around the 70-second mark, indicating sudden, dramatic changes. The harmonic content, while not consistently emphasizing specific pitches, shows structured progressions and a notable shift in the final ten seconds, suggesting a carefully controlled evolution. Reinouts track, in contrast, maintains a consistent tempo around 150 BPM and features consistent, low-amplitude energy changes, with a more subtle peak around the 60-second mark. The harmonic content, while repetitive, lacks the structured progressions of Tobias' track. The high spectral novelty indicates a continuously evolving spectral landscape. Both tracks, however, share a significant timbral shift in their final ten seconds, suggesting a change in sonic texture as they conclude. Tobias' track is characterized by dramatic, structural shifts, potentially aligning with progressive or experimental genres, like a experimental jazz track. Reinouts track emphasizes rhythmic consistency and evolving textures, suggesting techno or ambient electronic influences.
 
-You might be wondering: How do these songs sound? Well, I wont keep you waiting...
+Analyzing Tobias's and Reinout's tracks using computational tools demonstrated how powerful these methods can be when applied independently. By examining changes in sound color, energy levels, chord patterns, and evolving textures, we uncovered what makes each track unique. Reinout’s track had a steady, evolving soundscape, while Tobias’s track stood out with dramatic energy shifts and structured chord progressions. Rather than simply describing the tracks, this approach allowed for a deeper exploration of their potential styles and how they were constructed.
+
+What is exciting is that these skills are not just useful in this case, they can be applied to a wide range of musical analysis. The ability to break down and understand tracks in this way allows for tackling broader challenges, such as automatically sorting music by style or determining what gives a song its distinctive character. This kind of independent analysis creates new possibilities for researchers, producers, educators, and music creators, helping them gain fresh and unexpected insights into how music is structured and composed.
+
+
+Finally, you might be wondering: What do these tracks sound like? Well, I will not keep you waiting...
 
 This is Tobias' track:
-
 ```{r, echo=FALSE, results='asis'}
 cat('
 <audio controls>
@@ -670,7 +674,4 @@ cat('
 </audio>
 ')
 ```
-Analyzing Tobias's and Reinout's tracks using computational tools demonstrated how powerful these methods can be when applied independently. By examining changes in sound color, energy levels, chord patterns, and evolving textures, we uncovered what makes each track unique. Reinout’s track had a steady, evolving soundscape, while Tobias’s track stood out with dramatic energy shifts and structured chord progressions. Rather than simply describing the tracks, this approach allowed for a deeper exploration of their potential styles and how they were constructed.
-
-What is exciting is that these skills are not just useful in this case, they can be applied to a wide range of musical analysis. The ability to break down and understand tracks in this way allows for tackling broader challenges, such as automatically sorting music by style or determining what gives a song its distinctive character. This kind of independent analysis creates new possibilities for researchers, producers, educators, and music creators, helping them gain fresh and unexpected insights into how music is structured and composed.
 
